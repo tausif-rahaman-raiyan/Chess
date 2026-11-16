@@ -1,0 +1,102 @@
+name: Build Windows Installer & Portable
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    name: Windows x64 NSIS + Portable Build
+    runs-on: windows-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Cache Stockfish 17 and Lite GGUF model
+        id: cache-resources
+        uses: actions/cache@v4
+        with:
+          path: |
+            resources/engines
+            resources/models
+          key: offline-resources-${{ hashFiles('resources.lock.json', 'scripts/fetch-resources.mjs') }}
+
+      - name: Fetch and verify offline engine and model resources
+        run: node scripts/fetch-resources.mjs
+
+      - name: Verify SHA-256 hashes and NSIS size budget
+        run: node scripts/verify-hashes.mjs --strict
+
+      - name: Build offline CC0 opening book if missing
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "resources/book/openings.json")) {
+            node scripts/build-book.mjs
+          }
+
+      - name: Rebuild native modules for Electron
+        run: npx electron-builder install-app-deps
+
+      - name: Lint, Typecheck, and Run Unit Tests
+        run: |
+          npm run lint
+          npm run typecheck
+          npm test
+
+      - name: Build Renderer, Electron Main, and Windows Icon
+        run: npm run build
+
+      - name: Package Windows NSIS Installer and Portable EXE
+        env:
+          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+        run: npx electron-builder --win nsis portable --publish never
+
+      - name: Generate SHA256SUMS.txt
+        shell: pwsh
+        run: |
+          Get-ChildItem -Path release -Include *.exe,*.blockmap -Recurse | ForEach-Object {
+            $hash = (Get-FileHash -Path $_.FullName -Algorithm SHA256).Hash.ToLower()
+            "$hash  $($_.Name)"
+          } | Out-File -FilePath release/SHA256SUMS.txt -Encoding utf8
+
+      - name: Upload Windows Installer and Portable Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: OfflineChess-Pro-Windows-x64-${{ github.sha }}
+          path: |
+            release/*.exe
+            release/SHA256SUMS.txt
+          retention-days: 30
+
+      - name: Create GitHub Release on Tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            release/*.exe
+            release/SHA256SUMS.txt
+          generate_release_notes: true
+          draft: false
+          prerelease: false

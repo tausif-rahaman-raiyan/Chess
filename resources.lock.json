@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "stockfishVersion": "17",
+  "stockfishSourceUrl": "https://github.com/official-stockfish/Stockfish/releases/tag/sf_17",
+  "modelPackLimitBytes": 1850000000,
+  "resources": [
+    {
+      "id": "stockfish-17-windows-x86-64-avx2-bmi2",
+      "targetPath": "resources/engines/stockfish-windows-x86-64-bmi2.exe",
+      "url": "https://github.com/official-stockfish/Stockfish/releases/download/sf_17/stockfish-windows-x86-64-bmi2.zip",
+      "archiveEntry": "stockfish/stockfish-windows-x86-64-bmi2.exe",
+      "sha256": "AUTO_POPULATE_ON_FIRST_LOCK_OR_VERIFY",
+      "license": "GPL-3.0",
+      "optionalInDev": true
+    },
+    {
+      "id": "stockfish-17-windows-x86-64-avx2",
+      "targetPath": "resources/engines/stockfish-windows-x86-64-avx2.exe",
+      "url": "https://github.com/official-stockfish/Stockfish/releases/download/sf_17/stockfish-windows-x86-64-avx2.zip",
+      "archiveEntry": "stockfish/stockfish-windows-x86-64-avx2.exe",
+      "sha256": "AUTO_POPULATE_ON_FIRST_LOCK_OR_VERIFY",
+      "license": "GPL-3.0",
+      "optionalInDev": true
+    },
+    {
+      "id": "stockfish-17-windows-x86-64-sse41-popcnt",
+      "targetPath": "resources/engines/stockfish-windows-x86-64-sse41-popcnt.exe",
+      "url": "https://github.com/official-stockfish/Stockfish/releases/download/sf_17/stockfish-windows-x86-64-sse41-popcnt.zip",
+      "archiveEntry": "stockfish/stockfish-windows-x86-64-sse41-popcnt.exe",
+      "sha256": "AUTO_POPULATE_ON_FIRST_LOCK_OR_VERIFY",
+      "license": "GPL-3.0",
+      "optionalInDev": true
+    },
+    {
+      "id": "stockfish-17-windows-x86-64",
+      "targetPath": "resources/engines/stockfish-windows-x86-64.exe",
+      "url": "https://github.com/official-stockfish/Stockfish/releases/download/sf_17/stockfish-windows-x86-64.zip",
+      "archiveEntry": "stockfish/stockfish-windows-x86-64.exe",
+      "sha256": "AUTO_POPULATE_ON_FIRST_LOCK_OR_VERIFY",
+      "license": "GPL-3.0",
+      "optionalInDev": true
+    },
+    {
+      "id": "qwen2.5-1.5b-instruct-q4_k_m",
+      "targetPath": "resources/models/qwen2.5-1.5b-instruct-q4_k_m.gguf",
+      "url": "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q4_k_m.gguf",
+      "archiveEntry": null,
+      "sha256": "AUTO_POPULATE_ON_FIRST_LOCK_OR_VERIFY",
+      "license": "Apache-2.0",
+      "optionalInDev": true
+    }
+  ]
+}

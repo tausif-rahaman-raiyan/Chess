@@ -1,0 +1,11 @@
+node_modules/
+dist/
+dist-electron/
+release/
+resources/engines/*.exe
+resources/models/*.gguf
+*.db
+*.db-shm
+*.db-wal
+.DS_Store
+Thumbs.db

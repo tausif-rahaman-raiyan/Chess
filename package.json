@@ -1,0 +1,125 @@
+{
+  "name": "offline-chess-pro",
+  "version": "1.0.0",
+  "description": "100% offline Windows desktop chess studio with Stockfish 17, local GGUF AI coaching, real-time move quality badges, and full game review.",
+  "author": "Tausif Rahaman Raiyan",
+  "license": "GPL-3.0-only",
+  "main": "dist-electron/electron/main.js",
+  "scripts": {
+    "dev": "concurrently -k \"vite\" \"wait-on http://localhost:5173 && tsc -p tsconfig.electron.json && electron .\"",
+    "build:renderer": "vite build",
+    "build:electron": "tsc -p tsconfig.electron.json",
+    "build:icon": "node scripts/generate-icon.mjs",
+    "build": "npm run build:icon && npm run build:renderer && npm run build:electron",
+    "fetch:resources": "node scripts/fetch-resources.mjs",
+    "build:book": "node scripts/build-book.mjs",
+    "verify:hashes": "node scripts/verify-hashes.mjs",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.electron.json --noEmit",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\" \"electron/**/*.ts\" \"scripts/**/*.mjs\" \"tests/**/*.ts\"",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "dist:win": "npm run build && electron-builder --win nsis portable --publish never"
+  },
+  "dependencies": {
+    "adm-zip": "^0.5.16",
+    "better-sqlite3": "^11.5.0",
+    "chess.js": "^1.0.0-beta.8",
+    "lucide-react": "^0.454.0",
+    "node-llama-cpp": "^3.2.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "stockfish": "^17.1.0",
+    "zod": "^3.23.8",
+    "zustand": "^5.0.1"
+  },
+  "devDependencies": {
+    "@types/adm-zip": "^0.5.5",
+    "@types/better-sqlite3": "^7.6.11",
+    "@types/node": "^20.17.6",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@typescript-eslint/eslint-plugin": "^8.13.0",
+    "@typescript-eslint/parser": "^8.13.0",
+    "@vitejs/plugin-react": "^4.3.3",
+    "concurrently": "^9.0.1",
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8",
+    "eslint": "^8.57.1",
+    "eslint-plugin-react-hooks": "^4.6.2",
+    "prettier": "^3.3.3",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.10",
+    "vitest": "^2.1.4",
+    "wait-on": "^8.0.1"
+  },
+  "build": {
+    "appId": "com.offlinechesspro.desktop",
+    "productName": "OfflineChess Pro",
+    "copyright": "Copyright © 2026 OfflineChess Pro Contributors (GPL-3.0)",
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*",
+      "package.json",
+      "!node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
+      "!node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
+      "!node_modules/*.d.ts",
+      "!node_modules/.bin"
+    ],
+    "asar": true,
+    "asarUnpack": [
+      "node_modules/better-sqlite3/**/*",
+      "node_modules/node-llama-cpp/**/*",
+      "node_modules/@node-llama-cpp/**/*",
+      "node_modules/stockfish/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "resources/engines",
+        "to": "engines",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "resources/models",
+        "to": "models",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "resources/book",
+        "to": "book",
+        "filter": ["**/*"]
+      }
+    ],
+    "win": {
+      "target": [
+        { "target": "nsis", "arch": ["x64"] },
+        { "target": "portable", "arch": ["x64"] }
+      ],
+      "icon": "build/icon.ico",
+      "artifactName": "${productName}-${version}-win-${arch}-${target}.${ext}",
+      "requestedExecutionLevel": "asInvoker"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "OfflineChess Pro",
+      "uninstallDisplayName": "OfflineChess Pro",
+      "runAfterFinish": true,
+      "deleteAppDataOnUninstall": false,
+      "license": "build/license.txt",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico"
+    },
+    "portable": {
+      "artifactName": "${productName}-${version}-win-${arch}-portable.${ext}"
+    }
+  }
+}
